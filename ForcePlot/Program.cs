@@ -33,8 +33,17 @@ namespace ForcePlot
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.EnableVisualStyles();
-            frmGraph mainForm = new frmGraph();
-            if (Arg.Length > 0) { mainForm.firstArg = Arg[0]; }
+            string firstArg = "";
+            try
+            {
+                if (Arg.Length > 0) { firstArg = Arg[0]; }
+                foreach (string commandLineFile in AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData)
+                {
+                    if (System.IO.File.Exists(commandLineFile)) { firstArg = commandLineFile; }
+                }
+            }
+            catch { }
+            frmGraph mainForm = new frmGraph(firstArg);
             Application.Run(mainForm);
         }
     }

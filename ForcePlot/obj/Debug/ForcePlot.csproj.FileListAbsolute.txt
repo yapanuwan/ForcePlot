@@ -1,21 +1,13 @@
-C:\Users\Yapa\Documents\Visual Studio 2012\Projects\ForcePlot_2\bin\Debug\ForcePlot.exe.config
-C:\Users\Yapa\Documents\Visual Studio 2012\Projects\ForcePlot\ForcePlot\bin\Debug\ForcePlot.exe.config
-C:\Users\Yapa\Documents\Visual Studio 2012\Projects\ForcePlot\ForcePlot\bin\Debug\ForcePlot.exe
-C:\Users\Yapa\Documents\Visual Studio 2012\Projects\ForcePlot\ForcePlot\bin\Debug\ForcePlot.pdb
-C:\Users\Yapa\Documents\Visual Studio 2012\Projects\ForcePlot\ForcePlot\obj\Debug\ForcePlot.frmGraph.resources
-C:\Users\Yapa\Documents\Visual Studio 2012\Projects\ForcePlot\ForcePlot\obj\Debug\ForcePlot.csproj.GenerateResource.Cache
-C:\Users\Yapa\Documents\Visual Studio 2012\Projects\ForcePlot\ForcePlot\obj\Debug\ForcePlot.exe
-C:\Users\Yapa\Documents\Visual Studio 2012\Projects\ForcePlot\ForcePlot\obj\Debug\ForcePlot.pdb
-C:\Users\Yapa\Documents\Visual Studio 2012\Projects\ForcePlot\ForcePlot\obj\Debug\ForcePlot.csprojResolveAssemblyReference.cache
-C:\Users\Yapa\Documents\Visual Studio 2012\Projects\ForcePlot\ForcePlot\obj\Debug\ForcePlot.frmDebug.resources
-C:\Users\Yapa\Documents\Visual Studio 2012\Projects\ForcePlot\ForcePlot\obj\Debug\ForcePlot.Properties.Resources.resources
 C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\bin\Debug\ForcePlot.exe.config
+C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\obj\Debug\ForcePlot.csprojResolveAssemblyReference.cache
+C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\obj\Debug\ForcePlot.frmGraph.resources
+C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\obj\Debug\ForcePlot.csproj.GenerateResource.Cache
+C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\obj\Debug\ForcePlot.TrustInfo.xml
+C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\obj\Debug\ForcePlot.exe.manifest
 C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\obj\Debug\ForcePlot.exe
 C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\obj\Debug\ForcePlot.pdb
+C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\bin\Debug\ForcePlot.exe.manifest
+C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\bin\Debug\ForcePlot.application
 C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\bin\Debug\ForcePlot.exe
 C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\bin\Debug\ForcePlot.pdb
-C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\obj\Debug\ForcePlot.csprojResolveAssemblyReference.cache
-C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\obj\Debug\ForcePlot.frmDebug.resources
-C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\obj\Debug\ForcePlot.frmGraph.resources
-C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\obj\Debug\ForcePlot.Properties.Resources.resources
-C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\obj\Debug\ForcePlot.csproj.GenerateResource.Cache
+C:\Users\Nuwan\Dropbox\ForcePlot\ForcePlot\obj\Debug\ForcePlot.application

@@ -53,13 +53,27 @@ namespace ForcePlot
             }
             eq = eq.Replace('|', ')');
 
-            int bracketLevel = 0;
-            foreach (char c in eq.ToCharArray())
+            foreach (string part in eq.Split('='))
             {
-                if (c == '(') { bracketLevel++; }
-                else if (c == ')') { bracketLevel--; }
+                int brackets = 0;
+                foreach (char c in part.ToCharArray())
+                {
+                    if (c == '(') { brackets++; }
+                    else if (c == ')') { brackets--; }
+                }
+                if (!(brackets == 0)) { throw new Exception("Brackets?"); }
             }
-            if (!(bracketLevel == 0)) { throw new Exception("Brackets?"); }
+
+            eq = eq.Replace("⁰", "^0");
+            eq = eq.Replace("¹", "^1");
+            eq = eq.Replace("²", "^2");
+            eq = eq.Replace("³", "^3");
+            eq = eq.Replace("⁴", "^4");
+            eq = eq.Replace("⁵", "^5");
+            eq = eq.Replace("⁶", "^6");
+            eq = eq.Replace("⁷", "^7");
+            eq = eq.Replace("⁸", "^8");
+            eq = eq.Replace("⁹", "^9");
 
             eq = eq.ToLower();
             eq = " " + eq.Replace(" ", "") + " ";
@@ -69,7 +83,29 @@ namespace ForcePlot
 
             eq = eq.Replace(")(", ")*(");
 
-            int indOf = eq.IndexOf("log(");
+            int bracketLevel;
+            int indOf = eq.IndexOf("sqrt(");
+            while (indOf > 0)
+            {
+                bracketLevel = 0;
+                for (int i = indOf + 4; i < eq.Length; i++)
+                {
+                    if (eq[i] == '(') { bracketLevel++; }
+                    else if (eq[i] == ')')
+                    {
+                        bracketLevel--;
+                        if (bracketLevel < 1)
+                        {
+                            eq = eq.Insert(i+1, "^0.5");
+                            break;
+                        }
+                    }
+                }
+                indOf = eq.IndexOf("sqrt(", indOf + 4);
+            }
+            eq = eq.Replace("sqrt(", "(");
+
+            indOf = eq.IndexOf("log(");
             while (indOf > 0)
             {
                 bracketLevel = 0;
@@ -96,6 +132,8 @@ namespace ForcePlot
                 indOf = eq.IndexOf("log(", indOf + 3);
             }
 
+            eq = eq.Replace("pi", "p'i");
+
             eq = eq.Replace("log(", "l'o'g[");
             eq = eq.Replace("lg(", "l'g[");
             eq = eq.Replace("ln(", "l'n[");
@@ -121,6 +159,13 @@ namespace ForcePlot
                     if (char.IsLetter(eq[i - 1]) || char.IsDigit(eq[i - 1]))
                     {
                         eq = eq.Substring(0, i) + "*" + eq.Substring(i);
+                    }
+                } 
+                if (eq[i] == ')')
+                {
+                    if (char.IsLetter(eq[i + 1]) || char.IsDigit(eq[i + 1]))
+                    {
+                        eq = eq.Substring(0, i + 1) + "*" + eq.Substring(i + 1);
                     }
                 }
                 else if (eq[i] == '-' || eq[i] == '+')
@@ -164,9 +209,11 @@ namespace ForcePlot
             exp = exp.Replace("-x", "-(x)");
             exp = exp.Replace("-y", "-(y)");
 
+            exp = exp.Replace("pi", "π");
+
             exp = exp.Replace("log(", "(");
             exp = exp.Replace("lg(", "(10 , ");
-            exp = exp.Replace("ln(", "(2.718281828459 , ");
+            exp = exp.Replace("ln(", "(e , ");
 
             exp = exp.Replace("asin(", "(7 | ");
             exp = exp.Replace("acos(", "(8 | ");
@@ -198,6 +245,8 @@ namespace ForcePlot
                     || c == ' '
                     || c == 'x'
                     || c == 'y'
+                    || c == 'e'
+                    || c == 'π'
                     )
                 { }
                 else
@@ -228,6 +277,16 @@ namespace ForcePlot
                 {
                     return new variable(obstr == "x");
                 }
+                else if (obstr == "e" || obstr == "π")
+                {
+                    switch(obstr)
+                    {
+                        case "e":
+                            return new constant(MathConstants.e);
+                        case "π":
+                            return new constant(MathConstants.pi);
+                    }
+                }
                 else if (double.TryParse(obstr, out uselsessVariable))
                 {
                     return new singleValue(double.Parse(obstr));
@@ -242,9 +301,14 @@ namespace ForcePlot
             {
                 return new function(toExp(expression.Substring(((string)obj[0]).Length + 3)), MathFunctions.Zero + int.Parse((string)obj[0]));
             }
-            if ((string)obj[1] == ",")
+            int currPosition = 0;
+            for (int i = 0; i < obj.Length; i++)
             {
-                return new expression(new singleValue(double.Parse((string)obj[0])), toExp(expression.Substring(((string)obj[0]).Length + 3)), MathOperations.log);
+                if ((string)obj[i] == ",")
+                {
+                    return new expression(toExp(expression.Substring(0, currPosition - 1)), toExp(expression.Substring(currPosition + 2)), MathOperations.log);
+                }
+                currPosition += ((string)obj[i]).Length + 1;
             }
 
             for (int i = 0; i < obj.Length; i++)
@@ -262,6 +326,18 @@ namespace ForcePlot
                 else if (obstr == "x" || obstr == "y")
                 {
                     obj[i] = new variable(obstr == "x");
+                }
+                else if (obstr == "e" || obstr == "π")
+                {
+                    switch (obstr)
+                    {
+                        case "e":
+                            obj[i] = new constant(MathConstants.e);
+                            break;
+                        case "π":
+                            obj[i] = new constant(MathConstants.pi);
+                            break;
+                    }
                 }
                 else if (double.TryParse(obstr, out uselsessVariable))
                 {
@@ -304,11 +380,11 @@ namespace ForcePlot
             return combine(obj);
         }
 
-        private static expression combine(object[] obj)
+        private static term combine(object[] obj)
         {
             if (obj.Length == 1)
             {
-                return (expression)obj[0];
+                return (term)obj[0];
             }
 
             for (int i = 1; i < obj.Length; i++)
@@ -317,7 +393,7 @@ namespace ForcePlot
                 {
                     if ((MathOperations)obj[i] == MathOperations.raise)
                     {
-                        obj = replaceWithResults(obj, i, new expression((term)obj[i - 1], (term)obj[i + 1], (MathOperations)obj[i]));
+                        obj = replaceWithResults(obj, i, new exponent((term)obj[i - 1], (term)obj[i + 1]));
                         return combine(obj);
                     }
                 }
