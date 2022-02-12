@@ -1,0 +1,645 @@
+﻿//deleted 2012-12-14
+namespace ForcePlot
+{
+    public enum MathOperations {add, substract, multiply, divide, raise, log, NA};
+	public enum MathFunctions {Zero, sin, cos, tan, cosec, sec, cot, asin, acos, atan, abs};
+
+	public interface term
+	{
+		double getValue(double x, double y);
+	};
+
+	public class singleValue : term
+	{
+        public singleValue(double value)
+        {
+            val = value;
+        }
+        public double getValue(double x, double y)
+        {
+            return val;
+        }
+        public override string ToString()
+        {
+            return val.ToString();
+        }
+		double val;
+	};
+
+	public class variable : term
+	{
+        public variable(bool true_for_X_false_for_Y)
+        {
+            isX = true_for_X_false_for_Y;
+        }
+        public double getValue(double x, double y)
+        {
+            if (isX) { return x; }
+            else { return y; }
+        }
+        public override string ToString()
+        {
+            if (isX)
+            { return "x"; }
+            else
+            { return "y"; }
+        }
+		bool isX;
+	};
+
+	public class function : term
+	{
+		public function(term input, MathFunctions funType)
+        {
+            term1 = input;
+            fun = funType;
+        }
+        public double getValue(double x, double y)
+        {
+            switch (fun)
+            {
+                case MathFunctions.sin:
+                    return System.Math.Sin(term1.getValue(x, y));
+                case MathFunctions.cos:
+                    return System.Math.Cos(term1.getValue(x, y));
+                case MathFunctions.tan:
+                    return System.Math.Tan(term1.getValue(x, y));
+                case MathFunctions.cosec:
+                    return 1 / System.Math.Sin(term1.getValue(x, y));
+                case MathFunctions.sec:
+                    return 1 / System.Math.Cos(term1.getValue(x, y));
+                case MathFunctions.cot:
+                    return 1 / System.Math.Tan(term1.getValue(x, y));
+                case MathFunctions.asin:
+                    return System.Math.Asin(term1.getValue(x, y));
+                case MathFunctions.acos:
+                    return System.Math.Acos(term1.getValue(x, y));
+                case MathFunctions.atan:
+                    return System.Math.Atan(term1.getValue(x, y));
+
+                case MathFunctions.abs:
+                    return System.Math.Abs(term1.getValue(x, y));
+                default:
+                    return term1.getValue(x, y);
+            }
+        }
+        public override string ToString()
+        {
+            switch (fun)
+            {
+                case MathFunctions.sin:
+                    return "sin(" + term1.ToString() + ")";
+                case MathFunctions.cos:
+                    return "cos(" + term1.ToString() + ")";
+                case MathFunctions.tan:
+                    return "tan(" + term1.ToString() + ")";
+                case MathFunctions.cosec:
+                    return "cosec(" + term1.ToString() + ")";
+                case MathFunctions.sec:
+                    return "sec(" + term1.ToString() + ")";
+                case MathFunctions.cot:
+                    return "cot(" + term1.ToString() + ")";
+                case MathFunctions.asin:
+                    return "asin(" + term1.ToString() + ")";
+                case MathFunctions.acos:
+                    return "acos(" + term1.ToString() + ")";
+                case MathFunctions.atan:
+                    return "atan(" + term1.ToString() + ")";
+
+                case MathFunctions.abs:
+                    return "abs(" + term1.ToString() + ")";
+                default:
+                    return term1.ToString();
+            }
+        }
+		term term1;
+		MathFunctions fun;
+	};
+
+	public class expression : term
+	{	
+		public expression(term t1, term t2, MathOperations operation)
+        {
+            term1 = t1;
+            term2 = t2;
+            op = operation;
+        }
+        public double getValue(double x, double y)
+        {
+            switch (op)
+            {
+                case MathOperations.add:
+                    return term1.getValue(x, y) + term2.getValue(x, y);
+                case MathOperations.substract:
+                    return term1.getValue(x, y) - term2.getValue(x, y);
+                case MathOperations.multiply:
+                    return term1.getValue(x, y) * term2.getValue(x, y);
+                case MathOperations.divide:
+                    return term1.getValue(x, y) / term2.getValue(x, y);
+                case MathOperations.raise:
+                    return System.Math.Pow(term1.getValue(x, y), term2.getValue(x, y));
+                case MathOperations.log:
+                    return System.Math.Log(term2.getValue(x, y), term1.getValue(x, y));
+                default:
+                    return term1.getValue(x, y);
+            }
+        }
+        public override string ToString()
+        {
+            switch (op)
+            {
+                case MathOperations.add:
+                    return "(" + term1.ToString() + " + " + term2.ToString() + ")";
+                case MathOperations.substract:
+                    return "(" + term1.ToString() + " - " + term2.ToString() + ")";
+                case MathOperations.multiply:
+                    return "(" + term1.ToString() + " * " + term2.ToString() + ")";
+                case MathOperations.divide:
+                    return "(" + term1.ToString() + " / " + term2.ToString() + ")";
+                case MathOperations.raise:
+                    return "(" + term1.ToString() + " ^ " + term2.ToString() + ")";
+                case MathOperations.log:
+                    return "log(" + term1.ToString() + ", " + term2.ToString() + ")";
+                default:
+                    return term1.ToString();
+            }
+        }
+		term term1;
+		term term2;
+		MathOperations op;
+	}
+}
+
+//deleted 2012-12-14
+        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (debug) { startTime = DateTime.Now; }
+
+            tempLHS = LHS; tempRHS = RHS;
+            TminY = minY; TmaxY = maxY; TstepY = stepY; TminX = minX; TmaxX = maxX; TstepX = stepX;
+            Tscale = scale;
+            TgraphCol = graphCol;
+            Tbit = new Bitmap((int)((TmaxX - TminX) / TstepX) + 2, (int)((TmaxY - TminY) / TstepY) + 2);
+
+            int Xo = (int)Math.Round(-minX * scale);
+            int Yo = (int)Math.Round(maxY * scale);
+
+            //horizontal sweep
+            int numpoints = (int)((TmaxX - TminX) / TstepX) + 2;
+
+            {
+                double x = TminX;
+                for (int i = 0; x < TmaxX; x += TstepX, i++)
+                {
+                    foreach (double y in solveY(x))
+                    {
+                        Tbit.SetPixel(Xo + (int)Math.Round(x * Tscale), Yo + (int)Math.Round(y * -Tscale), TgraphCol);
+                    }
+
+                    if (worker.CancellationPending) { e.Cancel = true; break; }
+                    worker.ReportProgress((i * 100) / numpoints / 2);
+                }
+            }
+
+            //vertical sweep
+            numpoints = (int)((TmaxY - TminY) / TstepY) + 2;
+
+            {
+                double y = TminY;
+                for (int i = 0; y < TmaxY; y += TstepY, i++)
+                {
+                    foreach (double x in solveX(y))
+                    {
+                        Tbit.SetPixel(Xo + (int)Math.Round(x * Tscale), Yo + (int)Math.Round(y * -Tscale), TgraphCol);
+                    }
+
+                    if (worker.CancellationPending) { e.Cancel = true; break; }
+                    worker.ReportProgress(50 + (i * 100) / numpoints / 2);
+                }
+            }
+        }
+
+        System.Collections.Generic.List<double> solveY(double x)
+        {
+            System.Collections.Generic.List<double> answers = new List<double>();
+            int prevSign = 0;
+            for (double y = TmaxY; y > TminY; y -= TstepY)
+            {
+                double d = tempLHS.getValue(x, y) - tempRHS.getValue(x, y);
+                
+                if (double.IsNaN(d))
+                {
+                    prevSign = 0;
+                }
+                else
+                {
+                    if (d == 0)
+                    {
+                        answers.Add(y);
+                        prevSign = 0;
+                    }
+                    else
+                    {
+                        int sign = Math.Sign(d);
+                        if (!(sign == prevSign || prevSign == 0))
+                        {
+                            answers.Add(y);
+                        }
+                        prevSign = sign;
+                    }
+                }
+            }
+            return answers;
+        }
+
+        System.Collections.Generic.List<double> solveX(double y)
+        {
+            System.Collections.Generic.List<double> answers = new List<double>();
+            int prevSign = 0;
+            for (double x = TmaxX; x > TminX; x -= TstepX)
+            {
+                double d = tempLHS.getValue(x, y) - tempRHS.getValue(x, y);
+
+                if (double.IsNaN(d))
+                {
+                    prevSign = 0;
+                }
+                else
+                {
+                    if (d == 0)
+                    {
+                        answers.Add(x);
+                        prevSign = 0;
+                    }
+                    else
+                    {
+                        int sign = Math.Sign(d);
+                        if (!(sign == prevSign || prevSign == 0))
+                        {
+                            answers.Add(x);
+                        }
+                        prevSign = sign;
+                    }
+                }
+            }
+            return answers;
+        }
+
+//deleted 2012-12-02
+        void drawBit()
+        {
+            int Xo = (int)Math.Round(-minX * scaleX);
+            int Yo = (int)Math.Round(maxY * scaleY);
+            bit = new Bitmap(Ys.Length, Xs.Length);
+
+            {
+                double x = Xstart;
+                for (int i = 0; i < Ys.Length - 4; i++, x += Xinterval)
+                {
+                    for (int y = 0; y < Ys[i].Count; y++)
+                    {
+                        bit.SetPixel(Xo + (int)Math.Round(x * scaleX), Yo + (int)Math.Round(Ys[i][y] * -scaleY), graphCol);
+                    }
+                }
+            }
+            {
+                double y = Ystart;
+                for (int i = 0; i < Xs.Length - 4; i++, y += Yinterval)
+                {
+                    for (int x = 0; x < Xs[i].Count; x++)
+                    {
+                        bit.SetPixel(Xo + (int)Math.Round(Xs[i][x] * scaleX), Yo + (int)Math.Round(y * -scaleY), graphCol);
+                    }
+                }
+            }
+            bitScale = scaleX;
+            bitOffset = new Point((int)Math.Round(-minX * scaleX), (int)Math.Round(maxY * scaleY));
+        }
+
+// deleted 2012-11-30
+            //covers            
+            e.Graphics.FillRectangle(Brushes.White, -offset.X, -(int)(cover1 * scaleY) - 2, this.Width, 5);
+            e.Graphics.FillRectangle(Brushes.White, -offset.X, -(int)(cover2 * scaleY) - 4, this.Width, 5);
+
+
+// deleted 2012-11-30
+        void getLines()
+        {
+            lines.Clear();
+
+            if (Xs.Length < 2) { return; }
+            float width = (float)((Xs[1] - Xs[0]) * scaleX);
+
+            for (int x = 0; x < Xs.Length - 4; x++)
+            {
+                for (int y = 0; y < Ys[x].Count; y++)
+                {
+                    if (Ys[x + 1].Count > 0)
+                    {
+                        double bestY2 = double.PositiveInfinity;
+                        for (int y2 = 0; y2 < Ys[x + 1].Count; y2++)
+                        {
+                            if (Math.Abs(Ys[x][y] - Ys[x + 1][y2]) < bestY2)
+                            {
+                                bestY2 = Ys[x + 1][y2] - Ys[x][y];
+                            }
+                        }
+                        lines.Add(new RectangleF((float)(Xs[x] * scaleX), (float)(Ys[x][y] * -scaleY), width, (float)(bestY2 * -scaleY)));
+                    }
+                }
+            }
+        }
+
+
+// deleted 2012-11-25
+	static class Simplifier
+    {
+        enum operations
+        {
+            add,
+            substract,
+            multiply,
+            divide,
+            raise,
+            log,
+            sin,
+            cos,
+            tan,
+            cosec,
+            sec,
+            cot,
+            asin,
+            acos,
+            atan,
+            NA
+        }
+
+        //1. First of all apply this to the whole equation.
+        internal static string formatEq(string eq)
+        {
+            eq = eq.ToLower();
+            eq = " " + eq.Replace(" ", "") + " ";
+
+            eq = eq.Replace("[", "(");
+            eq = eq.Replace("]", ")");
+
+            eq = eq.Replace(")(", ")*(");
+
+            eq = eq.Replace("log(", "l'o'g[");
+            eq = eq.Replace("lg(", "l'g[");
+            eq = eq.Replace("ln(", "l'n[");
+            eq = eq.Replace("sin(", "s'i'n[");
+            eq = eq.Replace("cos(", "c'o's[");
+            eq = eq.Replace("tan(", "t'a'n[");
+            eq = eq.Replace("cosec(", "c'o's'e'c[");
+            eq = eq.Replace("sec(", "s'e'c[");
+            eq = eq.Replace("cot(", "c'o't[");
+            eq = eq.Replace("asin(", "a's'i'n[");
+            eq = eq.Replace("acos(", "a'c'o's[");
+            eq = eq.Replace("atan(", "a't'a'n[");
+            eq = eq.Replace("abs(", "a'b's[");
+
+            eq = eq.Replace("+-", "-");
+            eq = eq.Replace("-+", "-");
+            eq = eq.Replace("--", "+");
+
+            for (int i = 1; i < eq.ToCharArray().Length; i++)
+            {
+                if (eq.ToCharArray()[i] == '(')
+                {
+                    if (char.IsLetter(eq.ToCharArray()[i - 1]) || char.IsDigit(eq.ToCharArray()[i - 1]))
+                    {
+                        eq = eq.Substring(0, i) + "*" + eq.Substring(i);
+                    }
+                }
+                else if (eq.ToCharArray()[i] == '-' || eq.ToCharArray()[i] == '+')
+                {
+                    if (char.IsLetter(eq.ToCharArray()[i - 1]) || char.IsDigit(eq.ToCharArray()[i - 1]) || eq.ToCharArray()[i - 1] == ')')
+                    {
+                        eq = eq.Substring(0, i) + " " + eq.ToCharArray()[i] + " " + eq.Substring(i + 1);
+                    }
+                }
+                else if (char.IsLetter(eq.ToCharArray()[i]))
+                {
+                    if (char.IsLetter(eq.ToCharArray()[i - 1]) || char.IsDigit(eq.ToCharArray()[i - 1]))
+                    {
+                        eq = eq.Substring(0, i) + "*" + eq.Substring(i);
+                    }
+                }
+            }
+
+            eq = eq.Replace("=", " = ");
+            eq = eq.Replace("^", " ^ ");
+            eq = eq.Replace("*", " * ");
+            eq = eq.Replace("/", " / ");
+            eq = eq.Replace(",", ", ");
+
+            eq = eq.Replace("'", "");
+            eq = eq.Replace("[", "(");
+
+            eq = eq.Replace("+(", "(");
+            eq = eq.Replace("+x", "x");
+            eq = eq.Replace("+y", "y");
+
+            return eq.Trim();
+        }
+
+        //2. After applying formatEq to the whole equation,
+        //   split the equation to left side and right hand sides.
+        //   Then apply this to both sides before substituting values.
+        internal static string optimizeExp(string exp)
+        {
+            exp = exp.Trim();
+
+            exp = exp.Replace(",", " ,");
+
+            exp = exp.Replace("-x", "-(x)");
+            exp = exp.Replace("-y", "-(y)");
+
+            exp = exp.Replace("log(", "(");
+            exp = exp.Replace("lg(", "(10 , ");
+            exp = exp.Replace("ln(", "(2.71828 , ");
+
+            exp = exp.Replace("sin(", "(0 | ");
+            exp = exp.Replace("cos(", "(1 | ");
+            exp = exp.Replace("tan(", "(2 | ");
+
+            exp = exp.Replace("cosec(", "(3 | ");
+            exp = exp.Replace("sec(", "(4 | ");
+            exp = exp.Replace("cot(", "(5 | ");
+
+            exp = exp.Replace("asin(", "(6 | ");
+            exp = exp.Replace("acos(", "(7 | ");
+            exp = exp.Replace("atan(", "(8 | ");
+
+            return exp;
+        }
+        
+        //3. Substitute x and y values. then pass the expression to this.
+        internal static double simplify(string expression)
+        {
+            if (expression.Contains('('))
+            {
+                int beginBracket = expression.IndexOf('(');
+                int bracketLevel = 1;
+                int i = beginBracket;
+                char[] exp = expression.ToCharArray();
+                do
+                {
+                    i++;
+                    if (exp[i] == '(') { bracketLevel++; }
+                    if (exp[i] == ')') { bracketLevel--; }
+                } while (bracketLevel > 0);
+
+                i -= beginBracket;
+                double unbracketed = bracketlessSimplify(expression.Substring(beginBracket + 1, i - 1));
+
+                if (unbracketed < 0 && beginBracket > 0)
+                {
+                    if (exp[beginBracket - 1] == '-')
+                    {
+                        expression = expression.Remove(beginBracket - 1, 1);
+                        beginBracket--;
+                        unbracketed *= -1;
+                    }
+                }
+
+                return bracketlessSimplify(expression.Replace(expression.Substring(beginBracket, i + 1), unbracketed.ToString()));
+            }
+            else
+            {
+                return bracketlessSimplify(expression);
+            }
+        }
+
+        static double bracketlessSimplify(string expression)
+        {
+            string[] words = expression.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (words.Count<string>() == 1) { return double.Parse(words[0]); }
+
+            string simplified;
+            int i = 1;
+
+            if (expression.Contains('^'))
+            {
+                while (true)
+                {
+                    if (words[i] == "^")
+                    {
+                        simplified = oneOp(words[i - 1], operations.raise, words[i + 1]).ToString();
+                        return bracketlessSimplify(replaceWithResults(words, i, simplified));
+                    }
+                    i++;
+                }
+
+            }
+            if (expression.Contains('*') || expression.Contains('/'))
+            {
+                while (true)
+                {
+                    if (words[i] == "/")
+                    {
+                        simplified = oneOp(words[i - 1], operations.divide, words[i + 1]).ToString();
+                        return bracketlessSimplify(replaceWithResults(words, i, simplified));
+                    }
+                    else if (words[i] == "*")
+                    {
+                        simplified = oneOp(words[i - 1], operations.multiply, words[i + 1]).ToString();
+                        return bracketlessSimplify(replaceWithResults(words, i, simplified));
+                    }
+                    i++;
+                }
+
+            }
+
+            while (i < words.Length)
+            {
+                if (words[i] == "-")
+                {
+                    simplified = oneOp(words[i - 1], operations.substract, words[i + 1]).ToString();
+                    return bracketlessSimplify(replaceWithResults(words, i, simplified));
+                }
+                else if (words[i] == "+")
+                {
+                    simplified = oneOp(words[i - 1], operations.add, words[i + 1]).ToString();
+                    return bracketlessSimplify(replaceWithResults(words, i, simplified));
+                }
+                i++;
+            }
+
+            if (expression.Contains(',') || expression.Contains('|'))
+            {
+                i = 1;
+                while (true)
+                {
+                    if (words[i] == ",")
+                    {
+                        simplified = oneOp(words[i - 1], operations.log, words[i + 1]).ToString();
+                        return bracketlessSimplify(replaceWithResults(words, i, simplified));
+                    }
+                    else if (words[i] == "|")
+                    {
+                        simplified = oneOp("0", operations.sin + int.Parse(words[i - 1]), words[i + 1]).ToString();
+                        return bracketlessSimplify(replaceWithResults(words, i, simplified));
+                    }
+                    i++;
+                }
+            }
+
+            return 0;
+        }
+
+        static double oneOp(string a, operations op, string b)
+        {
+            double da = double.Parse(a), db = double.Parse(b);
+
+            switch (op)
+            {
+                case operations.add:
+                    return da + db;
+                case operations.substract:
+                    return da - db;
+                case operations.multiply:
+                    return da * db;
+                case operations.divide:
+                    return da / db;
+                case operations.raise:
+                    return Math.Pow(da, db);
+
+                case operations.log:
+                    return Math.Log(db, da);
+
+                case operations.sin:
+                    return Math.Sin(db);
+                case operations.cos:
+                    return Math.Cos(db);
+                case operations.tan:
+                    return Math.Tan(db);
+
+                case operations.cosec:
+                    return 1 / Math.Sin(db);
+                case operations.sec:
+                    return 1 / Math.Cos(db);
+                case operations.cot:
+                    return 1 / Math.Tan(db);
+
+                case operations.asin:
+                    return Math.Asin(db);
+                case operations.acos:
+                    return Math.Acos(db);
+                case operations.atan:
+                    return Math.Atan(db);
+
+                default:
+                    return da;
+            }
+
+        }
+
+        static string replaceWithResults(string[] words, int i, string replace)
+        {
+            words[i - 1] = replace; words[i] = ""; words[i + 1] = "";
+            return string.Join(" ", words);
+        }
+    }
